@@ -1,5 +1,9 @@
 window.saveDataAcrossSessions = true
 
+var positionX = document.getElementById('positionX')
+var positionY = document.getElementById('positionY')
+
+
 const LOOK_DELAY = 1000 // 1 second
 
 const LEFT_CUTOFF = window.innerWidth / 8
@@ -14,9 +18,12 @@ let flag = null
 
 webgazer
     .setGazeListener((data, timestamp) => {
-        console.log(data, timestamp)
-        
+      
         if (data == null || lookDirection === "STOP") return
+
+        // console.log(data, timestamp)
+        positionX.innerHTML = "Position: X: " + data.x
+        positionY.innerHTML = "Position: Y: " + data.y
 
         if (data.x < LEFT_CUTOFF &&
             lookDirection !== "LEFT" &&

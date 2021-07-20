@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <script src="https://webgazer.cs.brown.edu/webgazer.js?" defer></script> -->
+    <link rel="stylesheet" href="css/bootstrap.css">
     <script src="webgazer.js" defer></script>
     <script src="script.js" defer></script>
     <title>Pupil Direction</title>
@@ -15,27 +15,17 @@
           overflow: hidden;
         }
 
-        /* img {
-          width: 50vw;
-          height: 100vh;
-          transition: transform 200ms;
-          object-fit: cover;
-        }
-
-        img.left {
-          transform: translateX(-100vw);
-        }
-
-        img.right {
-          transform: translateX(100vw);
-        }
-
-        img.next {
-          display: none;
-        } */
     </style>
 </head>
 <body>
-  
+    <div class="container" style="position: absolute; top: 50%; left: 50%;
+                                  margin-right: -50%; transform: translate(-50%, -50%)">
+        <div style="font-size: 150%" id="positionX">
+            Position X:
+        </div>
+        <div style="font-size: 150%" id="positionY">
+            Position Y:      
+        </div>
+    </div>  
 </body>
 </html>
