@@ -18,6 +18,7 @@ function button_callback() {
     if(initialized)
         return; // if yes, then do not initialize everything again
 
+
     /*
         (1) initialize the pico.js face detector
     */
@@ -65,18 +66,18 @@ function button_callback() {
     }
 
 
-
-
     /*
         (4) this function is called each time a video frame becomes available
     */
     var processfn = function(video, dt) {
+
+        // eyes don't lookat the screen && last a period of time
         if (curr_flag == PUPIL_OUT && start_time + TIME_DELAY < new Date().getTime()) {
-            start_time = Number.POSITIVE_INFINITY;
+            start_time = Number.POSITIVE_INFINITY; // resotre to a initialization
             alert("Attention!");           
             // console.log("!!!")
-            // return;
         }
+
         // render the video frame to the canvas element and extract RGBA pixel data
         ctx.drawImage(video, 0, 0);
         var rgba = ctx.getImageData(0, 0, 640, 480).data;
@@ -114,7 +115,7 @@ function button_callback() {
                 curr_flag = PUPIL_FOCUS;
 
                 var r, c, s;
-                //
+                
                 ctx.beginPath();
                 ctx.arc(dets[i][1], dets[i][0], dets[i][2]/2, 0, 2*Math.PI, false);
                 ctx.lineWidth = 3;
@@ -124,6 +125,7 @@ function button_callback() {
                 // find the eye pupils for each detected face
                 // starting regions for localization are initialized based on the face bounding box
                 // (parameters are set empirically)
+
                 // first eye
                 r = dets[i][0] - 0.075*dets[i][2];
                 c = dets[i][1] - 0.175*dets[i][2];
@@ -140,6 +142,7 @@ function button_callback() {
                     ctx.strokeStyle = 'red';
                     ctx.stroke();
                 }
+
                 // second eye
                 r = dets[i][0] - 0.075*dets[i][2];
                 c = dets[i][1] + 0.175*dets[i][2];
@@ -157,9 +160,11 @@ function button_callback() {
                     ctx.stroke();                   
                 }
             }
-            else {
+            else { // not detect (assume not look at screen)
                 last_flag = curr_flag;
                 curr_flag = PUPIL_OUT;
+
+                // only last time look at the screen, current time not look at the screen, do we record the not focus starting time
                 if (last_flag == PUPIL_FOCUS) {
                     start_time = new Date().getTime();
                     // console.log(start_time)
