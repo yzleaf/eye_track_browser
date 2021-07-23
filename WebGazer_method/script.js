@@ -4,7 +4,7 @@ var positionX = document.getElementById('positionX')
 var positionY = document.getElementById('positionY')
 
 
-const LOOK_DELAY = 1000 // 1 second
+const LOOK_DELAY = 2000 // 2 second
 
 const LEFT_CUTOFF = window.innerWidth / 8
 const RIGHT_CUTOFF = window.innerWidth - window.innerWidth / 8
