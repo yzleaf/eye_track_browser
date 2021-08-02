@@ -1,6 +1,6 @@
 const TIME_DELAY = 3000; // 3s
-const PUPIL_FOCUS = 1;
-const PUPIL_OUT = 0;
+const PUPIL_FOCUS = 0;
+const PUPIL_OUT = 1;
 
 var initialized = false;
 
@@ -12,19 +12,17 @@ let positionLeft = document.getElementById('positionLeft')
 let positionRight = document.getElementById('positionRight')
 
 function button_callback() {
-    /*
-        (0) check whether we're already running face detection
-    */
+
+    /* 0. check whether we're already running detection process    */
     if(initialized)
         return; // if yes, then do not initialize everything again
 
 
-    /*
-        (1) initialize the pico.js face detector
-    */
+    /* 1. initialize the face detector - pico.js    */
     var update_memory = pico.instantiate_detection_memory(5); // we will use the detecions of the last 5 frames
     var facefinder_classify_region = function(r, c, s, pixels, ldim) {return -1.0;};
 
+    // official file can be find through the website
     // var cascadeurl = 'https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder';
     var cascadeurl = './pupiljs/facefinder';
     fetch(cascadeurl).then(function(response) {
@@ -36,9 +34,7 @@ function button_callback() {
     })
 
 
-    /*
-        (2) initialize the lploc.js library with a pupil localizer
-    */
+    /* 2. initialize the pupil localizer - lploc.js    */
     var do_puploc = function(r, c, s, nperturbs, pixels, nrows, ncols, ldim) {return [-1.0, -1.0];};
 
     // var puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
@@ -52,9 +48,7 @@ function button_callback() {
     })
 
 
-    /*
-        (3) get the drawing context on the canvas and define a function to transform an RGBA image to grayscale
-    */
+    /* 3. get the drawing context on the canvas and define a function to transform an RGBA image to grayscale    */
     var ctx = document.getElementsByTagName('canvas')[0].getContext('2d');
     function rgba_to_grayscale(rgba, nrows, ncols) {
         var gray = new Uint8Array(nrows*ncols);
@@ -66,16 +60,13 @@ function button_callback() {
     }
 
 
-    /*
-        (4) this function is called each time a video frame becomes available
-    */
+    /* 4. this function is called each time a video frame becomes available    */
     var processfn = function(video, dt) {
 
-        // eyes don't lookat the screen && last a period of time
+        // eyes don't lookat the screen && it last for a period of time
         if (curr_flag == PUPIL_OUT && start_time + TIME_DELAY < new Date().getTime()) {
-            start_time = Number.POSITIVE_INFINITY; // resotre to a initialization
-            alert("Attention!");           
-            // console.log("!!!")
+            start_time = Number.POSITIVE_INFINITY; // restore to a initial value
+            alert("Attention!"); // this alert may change to a return value flag which indicate potential cheating behavior          
         }
 
         // render the video frame to the canvas element and extract RGBA pixel data
@@ -132,6 +123,7 @@ function button_callback() {
                 s = 0.35*dets[i][2];
                 [r, c] = do_puploc(r, c, s, 63, image)
                 
+                // display
                 positionLeft.innerHTML = "First:  x  " + c + "  y  " + r
 
                 if(r>=0 && c>=0)
@@ -148,7 +140,8 @@ function button_callback() {
                 c = dets[i][1] + 0.175*dets[i][2];
                 s = 0.35*dets[i][2];
                 [r, c] = do_puploc(r, c, s, 63, image)
-               
+                
+                // display
                 positionRight.innerHTML = "Second:  x  " + c + "  y  " + r
 
                 if(r>=0 && c>=0)
@@ -175,14 +168,9 @@ function button_callback() {
     }
 
     
-    /*
-        (5) instantiate camera handling (see https://github.com/cbrandolino/camvas)
-    */
+    /* 5. instantiate camera handling (see https://github.com/cbrandolino/camvas)    */
     var mycamvas = new camvas(ctx, processfn);
 
 
-    /*
-        (6) it seems that everything went well
-    */
     initialized = true;
 }
